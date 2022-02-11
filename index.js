@@ -1,6 +1,15 @@
 const bodyParser = require("body-parser");
 const express = require("express"); // importando modula EXPRESS
 const app = express(); // Passa o express para a var app.
+const connection = require("./database/database");
+
+// Database
+
+connection.authenticate().then(() => {
+    console.log("Conexão feita com o banco de dados!")
+}).catch((msgErro) => {
+    console.log(msgErro);
+})
 
 
 
@@ -13,7 +22,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json()); //Comando que permite ler dados em JSON
 
 
-
+// Rotas
 
 app.get("/", (req, res) => {
 
