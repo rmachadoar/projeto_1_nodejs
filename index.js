@@ -2,7 +2,7 @@ const bodyParser = require("body-parser");
 const express = require("express"); // importando modula EXPRESS
 const app = express(); // Passa o express para a var app.
 const connection = require("./database/database");
-
+const perguntaModel = require('./database/Pergunta');
 // Database
 
 connection.authenticate().then(() => {
@@ -36,6 +36,7 @@ app.get("/perguntar", (req, res) => {
 
 
 app.post("/salvarpergunta", (req, res) => { // Rotas POST para receber dados
+
     var titulo = req.body.titulo; // identifica o form através do NAME e armazena o valor inserido lá na variavel
     var descricao = req.body.descricao; // identifica o textarea através do NAME e armazena o valor inserido lá na variavel
     
