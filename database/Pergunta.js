@@ -15,3 +15,5 @@ const Pergunta = connection.define('pergunta',{
 });
 
 Pergunta.sync({force: false}).then(() =>{}); // Sincroniza as tabelas com o BD. Force:false = não cria tabelas com mesmo nome
+
+module.exports = Pergunta;

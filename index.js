@@ -2,7 +2,7 @@ const bodyParser = require("body-parser");
 const express = require("express"); // importando modula EXPRESS
 const app = express(); // Passa o express para a var app.
 const connection = require("./database/database");
-const perguntaModel = require('./database/Pergunta');
+const Pergunta = require('./database/Pergunta'); // Importando MODEL do sequelize para salvar dados no BD
 // Database
 
 connection.authenticate().then(() => {
@@ -25,8 +25,17 @@ app.use(bodyParser.json()); //Comando que permite ler dados em JSON
 // Rotas
 
 app.get("/", (req, res) => {
+    Pergunta.findAll({raw: true, order:[
+        ['id','DESC'] // ASC = CRESCENTE || DESC = DECRESCENTE
+    ]}).then(perguntas => { // Pesquisa no BD os dados e salva na variávels "perguntas" e depois exporta para o front end a variável perguntas.
+        console.log(perguntas);
+        res.render("index",{
+            perguntas: perguntas
+        });
+    }); // findAll é como SELECT * FROM 
 
-    res.render("index");
+
+    
 });
 
 
@@ -40,7 +49,12 @@ app.post("/salvarpergunta", (req, res) => { // Rotas POST para receber dados
     var titulo = req.body.titulo; // identifica o form através do NAME e armazena o valor inserido lá na variavel
     var descricao = req.body.descricao; // identifica o textarea através do NAME e armazena o valor inserido lá na variavel
     
-    res.send("Formulário recebido: "+ titulo + "<br>" + "Descrição: " + descricao);
+    Pergunta.create({ // Create é como um INSERT no banco de dados
+        titulo: titulo, // 
+        descricao: descricao
+    }).then(()=> {
+        res.redirect("/");
+    })
 });
 
 
