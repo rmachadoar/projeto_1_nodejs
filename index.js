@@ -3,6 +3,8 @@ const express = require("express"); // importando modula EXPRESS
 const app = express(); // Passa o express para a var app.
 const connection = require("./database/database");
 const Pergunta = require('./database/Pergunta'); // Importando MODEL do sequelize para salvar dados no BD
+const Resposta = require("./database/Resposta");
+
 // Database
 
 connection.authenticate().then(() => {
@@ -62,12 +64,20 @@ app.get("/pergunta/:id", (req, res) => {
     var id = req.params.id;
 
     Pergunta.findOne({
-        where: {id: id}
+        where: {id: id},
+    
     }).then(pergunta => {
         if(pergunta != undefined){ // Pergunta encontrada
-            res.render("pergunta",{
-                pergunta: pergunta
-            });
+
+            Resposta.findAll({
+                where: {perguntaId: pergunta.id},
+                order: [['id', 'DESC']]
+            }).then(respostas => {
+                res.render("pergunta",{
+                    pergunta: pergunta,
+                    respostas: respostas
+                });
+            })    
             
         }else{ // Não encontrada
             res.redirect("/");
@@ -75,6 +85,18 @@ app.get("/pergunta/:id", (req, res) => {
     });
 
 })
+
+
+app.post("/responder", (req, res) => {
+    var corpo = req.body.corpo;
+    var perguntaId = req.body.pergunta;
+    Resposta.create({
+        corpo: corpo,
+        perguntaId: perguntaId
+    }).then(()=> {
+        res.redirect("/pergunta/" + perguntaId);
+    })
+});
 
 app.listen(8080, ()=> {
     console.log("App Rodando!")
